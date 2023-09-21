@@ -1,0 +1,108 @@
+---
+title: "Prueba PLS"
+author: "Federico Ricardo Checozzi"
+date: "2023-09-13"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r warning = FALSE, message = FALSE}
+library(tidyverse)
+library(data.table)
+library(mdatools)
+library(rhdf5)
+```
+
+Dataset de entrenamiento: un espectro por muestra con downsampling de longitudes de onda. Implementé el downsampling porque el costo de memoria del algoritmo crece con el número de variables y estaba empezando a usar memoria virtual.
+
+```{r}
+setwd(r"(C:\Users\tiama\OneDrive\Documentos\Maestría en minería y exploración de datos\Tesis de maestría\Scripts\Código de prueba\output)")
+
+spectra <- fread("SNV1_downsampled.csv", dec = ',',header = TRUE)
+class <- fread("train_samples_class.csv", dec = ',',header = TRUE)
+```
+
+Para hacer la validación cruzada, uso el método de "persiana veneciana" como aparece en el paper de LIBS. Elegir segmentos aleatoriamente no parece cambiar demasiado el resultado.
+mdatools utiliza el algoritmo SIMPLS.
+
+```{r}
+start_time <- Sys.time()
+model <- plsda(spectra,as.factor(class$trainClass),cv = list('ven', 5))
+end_time <- Sys.time()
+
+end_time - start_time
+```
+
+El problema con estos modelos es que consiguen buena exactitud al costo de generar muchos falsos negativos. ¿Será por la falta de datos o porque la función eligió modelos muy simples por defecto? Notese que eligió un solo componente (¿Por qué? La documentación dice que busca el primer mínimo local en la curva de RMSE).
+```{r}
+summary(model)
+```
+
+Gráfico de error en función del número de componentes:
+
+```{r}
+plotRMSE(model)
+```
+
+Gráfico Q vs. T2 (lo vi en el paper EMSLIBS2019, como parte de la validación cruzada o una predicción genera las estadísticas correspondientes):
+
+```{r}
+plotXResiduals(model)
+```
+
+Predicción en el dataset de prueba:
+
+```{r}
+setwd("C:/Users/tiama/OneDrive/Documentos/Dataset EMSLIBS2019/")
+##########################################
+# Test Data
+##########################################
+start_time <- Sys.time()
+testData <- h5read(file = "test_downsampled.h5", name = "UNKNOWN") # import spectra
+h5closeAll()
+
+test_class <- fread("test_labels.csv", dec = ',',header = FALSE)
+
+##########################################
+# Merge
+##########################################
+
+
+testData <- as.data.frame(do.call('rbind',testData))
+
+##########################################
+# End of loading script
+##########################################
+
+test_res = predict(model, testData, as.factor(test_class$V1))
+
+end_time <- Sys.time()
+
+end_time - start_time
+```
+
+Los resultados son bastante malos:
+
+```{r}
+summary(test_res)
+
+plotPredictions(test_res)
+
+plotXResiduals(test_res)
+
+getConfusionMatrix(test_res)
+
+```
+
+Aún no encuentro una manera de que el programa me genere un vector de predicciones directamente (raro y algo frustrante), pero  tengo esta matriz que almacena -1 y 1 para PLS de cada clase, así que en el peor caso podría armar una función:
+
+```{r}
+test_res$c.pred
+```
+
+La documentación de mdatools puede verse en estos links, hay un montón de métodos implementados: 
+https://mdatools.com/docs/plsda.html
+https://cran.r-project.org/web/packages/mdatools/mdatools.pdf
