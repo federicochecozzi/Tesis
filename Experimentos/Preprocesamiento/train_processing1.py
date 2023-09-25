@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Sep 23 16:01:34 2023
+Created on Mon Sep 25 15:18:00 2023
 
 @author: Federico Checozzi
 """
@@ -32,9 +32,9 @@ os.chdir(datasetpath)   # selecting the directory containing the data files
 
 start = time.time()
 
-testFile = h5py.File("test.h5",'r')     # testing data, unless the filename was changed
+trainFile = h5py.File("train.h5",'r')     # testing data, unless the filename was changed
 
-wavelengths = testFile["Wavelengths"]
+wavelengths = trainFile["Wavelengths"]
 wavelengths = wavelengths[list(wavelengths.keys())[0]][()]
 
 for sample in list(testFile["UNKNOWN"].keys()):
@@ -47,9 +47,28 @@ for sample in list(testFile["UNKNOWN"].keys()):
        testData = np.append(testData, np.apply_along_axis(process_row, 1, tempData.transpose()), axis = 0)
 
 
+for sample in list(trainFile["Spectra"].keys()):
+    tempData = trainFile["Spectra"][sample].value
+    tempData = tempData[:,0:spectraCount]
+    if "trainData" not in locals():
+        trainData = tempData.transpose()
+    else:
+        trainData = np.append(trainData, tempData.transpose(), axis = 0)
+# creates a two-dimensional array (matrix) containing the training data
+# each row represents a single spectrum
+
+trainClass = trainFile["Class"]["1"].value
+for i in range(0,50000,500):
+    if i == 0:
+        tempClass = trainClass[0:spectraCount]
+    else:
+        tempClass = np.append(tempClass, trainClass[i:(i+spectraCount)])
+trainClass = tempClass
+
+
 # creates a two-dimensional array (matrix) containing the testing data
 # each row represents a single spectrum
-testFile.close()
+trainFile.close()
 del tempData, sample
 
 end = time.time()
@@ -63,10 +82,20 @@ print(end - start)
 # Returns 2 variables -> testData, wavelengths
 ##########################################
 
-#14412.577882289886s
+#Procesamiento
+#https://stackoverflow.com/questions/45604688/apply-function-on-each-row-row-wise-of-a-numpy-array
+#https://stackoverflow.com/questions/52673285/performance-of-pandas-apply-vs-np-vectorize-to-create-new-column-from-existing-c
+
+#start = time.time()
+#testData = np.apply_along_axis(process_row, 1, testData)
+#end = time.time()
+
+#print('Execution time is:')
+#print(end - start)
+#8202.967220783234s
 
 #Escritura en un nuevo archivo
-testFile = h5py.File('test_processed.h5','w')
+testFile = h5py.File('train_processed.h5','w')
 
 grp_unknown = testFile.create_group("UNKNOWN")
 #grp_unknown1 = grp_unknown.create_group("1")

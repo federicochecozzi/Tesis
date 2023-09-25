@@ -12,7 +12,7 @@ import numpy as np
 import time
 from scipy.signal import decimate
 
-datasetpath = r"C:\Users\tiama\OneDrive\Documentos\Dataset EMSLIBS2019"; 
+datasetpath = r"C:\Users\federicochecozzi\Documents\Tesis\Datasets"; 
 
 ## set number of spectra and path to the data files
 os.chdir(datasetpath)   # selecting the directory containing the data files
@@ -42,6 +42,7 @@ del tempData, sample
 end = time.time()
 print('Execution time is:')
 print(end - start)
+#96.65290451049805
 ##########################################
 # End of loading script
 ##########################################
