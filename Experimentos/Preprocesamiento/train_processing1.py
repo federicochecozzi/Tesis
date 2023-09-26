@@ -37,34 +37,17 @@ trainFile = h5py.File("train.h5",'r')     # testing data, unless the filename wa
 wavelengths = trainFile["Wavelengths"]
 wavelengths = wavelengths[list(wavelengths.keys())[0]][()]
 
-for sample in list(testFile["UNKNOWN"].keys()):
-    print(sample)
-    tempData = testFile["UNKNOWN"][sample][()]
-   
-    if "testData" not in locals():
-        testData = np.apply_along_axis(process_row, 1, tempData.transpose())
-    else:
-       testData = np.append(testData, np.apply_along_axis(process_row, 1, tempData.transpose()), axis = 0)
-
-
 for sample in list(trainFile["Spectra"].keys()):
-    tempData = trainFile["Spectra"][sample].value
-    tempData = tempData[:,0:spectraCount]
+    print(sample)
+    tempData = trainFile["Spectra"][sample][()]
     if "trainData" not in locals():
-        trainData = tempData.transpose()
+        trainData = np.apply_along_axis(process_row, 1, tempData.transpose())
     else:
-        trainData = np.append(trainData, tempData.transpose(), axis = 0)
+        trainData = np.append(trainData, np.apply_along_axis(process_row, 1, tempData.transpose()), axis = 0)
 # creates a two-dimensional array (matrix) containing the training data
 # each row represents a single spectrum
 
-trainClass = trainFile["Class"]["1"].value
-for i in range(0,50000,500):
-    if i == 0:
-        tempClass = trainClass[0:spectraCount]
-    else:
-        tempClass = np.append(tempClass, trainClass[i:(i+spectraCount)])
-trainClass = tempClass
-
+trainClass = trainFile["Class"]["1"][()]
 
 # creates a two-dimensional array (matrix) containing the testing data
 # each row represents a single spectrum
@@ -95,16 +78,16 @@ print(end - start)
 #8202.967220783234s
 
 #Escritura en un nuevo archivo
-testFile = h5py.File('train_processed.h5','w')
+trainFile = h5py.File('train_processed.h5','w')
 
-grp_unknown = testFile.create_group("UNKNOWN")
-#grp_unknown1 = grp_unknown.create_group("1")
-#grp_unknown2 = grp_unknown.create_group("2")
-grp_wavelength = testFile.create_group("Wavelengths")
+grp_spectra = trainFile.create_group("Spectra")
+grp_wavelength = trainFile.create_group("Wavelengths")
+grp_class = trainFile.create_group("Class")
 
-grp_unknown.create_dataset('1', data = np.transpose(testData[0:10000,:]), chunks = (40002, 10000), compression="gzip", compression_opts=7)
-grp_unknown.create_dataset('2', data = np.transpose(testData[10000:,:]), chunks = (40002, 10000), compression="gzip", compression_opts=7)
+for i in range(0,100):
+    grp_spectra.create_dataset("%03d"%(i+1), data = np.transpose(trainData[500*i:500*(i+1),:]), chunks = (40002, 500), compression="gzip", compression_opts=7)
 grp_wavelength.create_dataset('1', data = wavelengths, chunks = (1, 40002), compression="gzip", compression_opts=7)
+grp_class.create_dataset('1', data = trainClass, chunks = (1, 50000), compression="gzip", compression_opts=7)
 
-testFile.close()
+trainFile.close()
 
