@@ -13,7 +13,7 @@ import time
 from skimage.restoration import denoise_wavelet
 from pybaselines import Baseline
 
-datasetpath = r"C:\Users\federicochecozzi\Documents\Tesis\Datasets"; 
+datasetpath = r"D:\Tesis\Datasets";  
 
 baseline_fitter = Baseline(check_finite=False)
 
