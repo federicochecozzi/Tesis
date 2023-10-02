@@ -68,22 +68,31 @@ model <- plsda(trainData,as.factor(trainClass),cv = list('ven', 5))
 end_time <- Sys.time()
 
 end_time - start_time
+#1.417203 hours
+
+summary(model)
 
 plotRMSE(model)
 
-plotPredictions(structure(model, class = "regmodel"), ncomp = 17, ny = 3)
+plotPredictions(model, ncomp = 14)
+plotPredictions(structure(model, class = "regmodel"), ncomp = 14, ny = 3)
 
+start_time <- Sys.time()
 test_res = predict(model, testData, as.factor(testClass))
+end_time <- Sys.time()
+
+end_time - start_time
+#2.244019 mins
 
 summary(test_res)
 
-plotPredictions(test_res, ncomp = 17)
+plotPredictions(test_res, ncomp = 14)
 #plotPredictions(test_res, res = "cv", ncomp = 17)
 
-plotXResiduals(test_res, ncomp = 17)
+plotXResiduals(test_res, ncomp = 14)
 
-getConfusionMatrix(test_res, ncomp = 17)
+getConfusionMatrix(test_res, ncomp = 14)
 
-showPredictions(test_res, ncomp = 17)
+showPredictions(test_res, ncomp = 14)
 
 pred_class <- test_res$c.pred
