@@ -36,31 +36,35 @@ df_wavvisu.columns = df.columns
 wavelengths = [float(wavelength) for wavelength in df.columns]
 
 sns.lineplot(x = wavelengths, y = df_mwmv.loc[0])
-sns.lineplot(x = wavelengths[30000:35000], y = df_mwmv.loc[0][30000:35000])
+sns.lineplot(x = wavelengths[30700:31000], y = df_mwmv.loc[0][30700:31000])
 
 #peaks = find_peaks_cwt(df_mwmv.loc[0][30000:35000],np.arange(10,500))
 #peaks = find_peaks(df_mwmv.loc[0][30000:35000], height = 250)
 #is_peak = np.zeros((5000,))
 #is_peak[peaks] = 1
 #sns.lineplot(x = wavelengths[30000:35000], y = df_mwmv.loc[0][30000:35000], hue = is_peak)
-peaks = find_peaks(df_mwmv.loc[0][30700:31000], height = 500)
+peaks = find_peaks(df_mwmv.loc[0][30700:31000], height = 400, width = 1)
 is_peak = np.zeros((300,))
 is_peak[peaks[0]] = 1
 ax = sns.lineplot(x = wavelengths[30700:31000], y = df_mwmv.loc[0][30700:31000])
 sns.scatterplot(x = [wavelengths[30700 + index] for index in peaks[0]],y = df_mwmv.loc[0].iloc[30700 + peaks[0]],color = 'orange',ax = ax)
+ax.hlines(y=peaks[1]["width_heights"], xmin= np.interp(peaks[1]["left_ips"], list(range(0,300)), wavelengths[30700:31000]),
+           xmax=np.interp(peaks[1]["right_ips"], list(range(0,300)), wavelengths[30700:31000]), color = "C1")
 
-peaks = find_peaks(df_wavbayes.loc[0][30700:31000], height = 500)
+peaks = find_peaks(df_wavbayes.loc[0][30700:31000], height = 400, width = 1)
 is_peak = np.zeros((300,))
 is_peak[peaks[0]] = 1
 ax = sns.lineplot(x = wavelengths[30700:31000], y = df_wavbayes.loc[0][30700:31000])
 sns.scatterplot(x = [wavelengths[30700 + index] for index in peaks[0]],y = df_wavbayes.loc[0].iloc[30700 + peaks[0]],color = 'orange',ax = ax)
+ax.hlines(y=peaks[1]["width_heights"], xmin= np.interp(peaks[1]["left_ips"], list(range(0,300)), wavelengths[30700:31000]),
+           xmax=np.interp(peaks[1]["right_ips"], list(range(0,300)), wavelengths[30700:31000]), color = "C1")
 
 peaks = find_peaks(df_wavvisu.loc[0][30700:31000], height = 400, width = 1)
 is_peak = np.zeros((300,))
 is_peak[peaks[0]] = 1
 ax = sns.lineplot(x = wavelengths[30700:31000], y = df_wavvisu.loc[0][30700:31000])
 sns.scatterplot(x = [wavelengths[30700 + index] for index in peaks[0]],y = df_wavvisu.loc[0].iloc[30700 + peaks[0]],color = 'orange',ax = ax)
-ax.hlines(y=peaks[1]["width_heights"], xmin=peaks[1]["left_ips"],
-           xmax=peaks[1]["right_ips"], color = "C1")
-ax.hlines(y=peaks[1]["width_heights"], xmin=(peaks[1]["left_ips"] + 30700) * (max(wavelengths) - min(wavelengths)) / 40002,
-           xmax=(peaks[1]["right_ips"] + 30700) * (max(wavelengths) - min(wavelengths)) / 40002, color = "C1")
+ax.hlines(y=peaks[1]["width_heights"], xmin= np.interp(peaks[1]["left_ips"], list(range(0,300)), wavelengths[30700:31000]),
+           xmax=np.interp(peaks[1]["right_ips"], list(range(0,300)), wavelengths[30700:31000]), color = "C1")
+#ax.hlines(y=peaks[1]["width_heights"], xmin=(peaks[1]["left_ips"] + 30700) * (max(wavelengths) - min(wavelengths)) / 40002,
+#           xmax=(peaks[1]["right_ips"] + 30700) * (max(wavelengths) - min(wavelengths)) / 40002, color = "C1")
