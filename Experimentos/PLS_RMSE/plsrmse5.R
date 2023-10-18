@@ -2,6 +2,7 @@ library(tidyverse)
 library(data.table)
 library(mdatools)
 library(rhdf5)
+library(caret)
 #library(mlr)
 
 
@@ -118,4 +119,15 @@ accuracy
 
 #showPredictions(test_res, ncomp = 14)
 
-#pred_class <- test_res$c.pred
+pred_class <- test_res$c.pred
+ypred <- test_res$y.pred
+
+#predicción en base a 60 componentes 
+apply(ypred[,60,],1,which.max)
+apply(ypred[,60,],1,function(x) any(x > 0))
+
+testClassfactor <- as.factor(testClass)
+levels(testClassfactor) <- c(levels(testClassfactor),'12')
+confusionMatrix(as.factor(testClass),as.factor(apply(ypred[,60,],1,which.max)))
+confusionMatrix(as.factor(testClass),as.factor(apply(ypred[,45,],1,which.max)))
+confusionMatrix(as.factor(apply(ypred[,45,],1,which.max)),testClassfactor)
