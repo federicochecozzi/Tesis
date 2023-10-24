@@ -68,3 +68,14 @@ ax.hlines(y=peaks[1]["width_heights"], xmin= np.interp(peaks[1]["left_ips"], lis
            xmax=np.interp(peaks[1]["right_ips"], list(range(0,300)), wavelengths[30700:31000]), color = "C1")
 #ax.hlines(y=peaks[1]["width_heights"], xmin=(peaks[1]["left_ips"] + 30700) * (max(wavelengths) - min(wavelengths)) / 40002,
 #           xmax=(peaks[1]["right_ips"] + 30700) * (max(wavelengths) - min(wavelengths)) / 40002, color = "C1")
+
+def simulated_spectre(wavelengths,peak_locations,**kwargs):
+    locations = wavelengths[peak_locations]
+    heights = np.interp(kwargs['peak_heights'],list(range(len(peak_locations))),wavelengths)
+    FWHM = kwargs['peak_heights']
+    spectre = np.zeros(wavelengths.shape)
+    for i in range(len(peak_locations)):
+        #Revisar Zhang 2013
+        spectre += heights[i] * FWHM[i]**2/((wavelengths-locations[i])**2 + FWHM[i]**2)
+    return spectre
+        
