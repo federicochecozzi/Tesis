@@ -15,6 +15,26 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.signal import find_peaks, find_peaks_cwt
 from skimage.restoration import denoise_wavelet
+from math import pi
+
+def simulated_spectre(model,wavelengths,peak_locations,**kwargs):
+    locations = wavelengths[peak_locations]#[wavelengths[index] for index in peak_locations]
+    heights = kwargs['peak_heights']#np.interp(kwargs['peak_heights'],list(range(len(peak_locations))),wavelengths)
+    FWHM = np.interp(kwargs["right_ips"], list(range(len(wavelengths))), wavelengths) - np.interp(kwargs["left_ips"], list(range(len(wavelengths))), wavelengths)#kwargs['widths']
+    spectre = np.zeros(len(wavelengths))
+    for i in range(len(peak_locations)):
+        if (model == 'Guo2017'):
+        #Guo 2017
+            spectre += heights[i] * FWHM[i]**2/(4*(wavelengths-locations[i])**2 + FWHM[i]**2)
+        elif(model == 'Yang2018'):
+        #Yang 2018
+            spectre += heights[i] * 2 / pi * FWHM[i]**2/(4*(wavelengths-locations[i])**2 + FWHM[i]**2)
+        else:
+        #Zhang 2013
+            spectre += heights[i] * FWHM[i]**2/((wavelengths-locations[i])**2 + FWHM[i]**2)
+
+    #spectre = heights[0] * FWHM[0]**2/((wavelengths-locations[0])**2 + FWHM[0]**2)
+    return spectre
 
 wdir = r"C:\Users\tiama\OneDrive\Documentos\Maestría en minería y exploración de datos\Tesis de maestría\Scripts\Código de prueba\output"
 os.chdir(wdir)
@@ -69,13 +89,28 @@ ax.hlines(y=peaks[1]["width_heights"], xmin= np.interp(peaks[1]["left_ips"], lis
 #ax.hlines(y=peaks[1]["width_heights"], xmin=(peaks[1]["left_ips"] + 30700) * (max(wavelengths) - min(wavelengths)) / 40002,
 #           xmax=(peaks[1]["right_ips"] + 30700) * (max(wavelengths) - min(wavelengths)) / 40002, color = "C1")
 
-def simulated_spectre(wavelengths,peak_locations,**kwargs):
-    locations = wavelengths[peak_locations]
-    heights = np.interp(kwargs['peak_heights'],list(range(len(peak_locations))),wavelengths)
-    FWHM = kwargs['peak_heights']
-    spectre = np.zeros(wavelengths.shape)
-    for i in range(len(peak_locations)):
-        #Revisar Zhang 2013
-        spectre += heights[i] * FWHM[i]**2/((wavelengths-locations[i])**2 + FWHM[i]**2)
-    return spectre
-        
+simulated = simulated_spectre("default",np.array(wavelengths[30700:31000]),peaks[0],**peaks[1])        
+sns.lineplot(x = wavelengths[30700:31000], y = simulated)
+
+peaks = find_peaks(df_wavvisu.loc[0], height = 1000, width = 1)
+is_peak = np.zeros((40002,))
+is_peak[peaks[0]] = 1
+ax = sns.lineplot(x = wavelengths, y = df_wavvisu.loc[0])
+sns.scatterplot(x = [wavelengths[index] for index in peaks[0]],y = df_wavvisu.loc[0].iloc[peaks[0]],color = 'orange',ax = ax)
+ax.hlines(y=peaks[1]["width_heights"], xmin= np.interp(peaks[1]["left_ips"], list(range(40002)), wavelengths),
+           xmax=np.interp(peaks[1]["right_ips"], list(range(40002)), wavelengths), color = "C1")
+#ax.hlines(y=peaks[1]["width_heights"], xmin=(peaks[1]["left_ips"] + 30700) * (max(wavelengths) - min(wavelengths)) / 40002,
+#           xmax=(peaks[1]["right_ips"] + 30700) * (max(wavelengths) - min(wavelengths)) / 40002, color = "C1")
+
+simulated = simulated_spectre("default",np.array(wavelengths),peaks[0],**peaks[1])        
+sns.lineplot(x = wavelengths, y = simulated)
+
+simulated = simulated_spectre("Guo2017",np.array(wavelengths),peaks[0],**peaks[1])        
+sns.lineplot(x = wavelengths, y = simulated)
+
+simulated = simulated_spectre("Yang2018",np.array(wavelengths),peaks[0],**peaks[1])        
+sns.lineplot(x = wavelengths, y = simulated)
+
+sigma = np.std(wavelengths[0:2500])
+noise = np.random.normal(0,sigma,40002)
+sns.lineplot(x = wavelengths, y = simulated + noise)
