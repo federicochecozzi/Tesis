@@ -89,10 +89,18 @@ ax.hlines(y=peaks[1]["width_heights"], xmin= np.interp(peaks[1]["left_ips"], lis
 #ax.hlines(y=peaks[1]["width_heights"], xmin=(peaks[1]["left_ips"] + 30700) * (max(wavelengths) - min(wavelengths)) / 40002,
 #           xmax=(peaks[1]["right_ips"] + 30700) * (max(wavelengths) - min(wavelengths)) / 40002, color = "C1")
 
+peaks = find_peaks(df_wavvisu.loc[0][30700:31000], height = 750, width = 1)
+is_peak = np.zeros((300,))
+is_peak[peaks[0]] = 1
+ax = sns.lineplot(x = wavelengths[30700:31000], y = df_wavvisu.loc[0][30700:31000])
+sns.scatterplot(x = [wavelengths[30700 + index] for index in peaks[0]],y = df_wavvisu.loc[0].iloc[30700 + peaks[0]],color = 'orange',ax = ax)
+ax.hlines(y=peaks[1]["width_heights"], xmin= np.interp(peaks[1]["left_ips"], list(range(0,300)), wavelengths[30700:31000]),
+           xmax=np.interp(peaks[1]["right_ips"], list(range(0,300)), wavelengths[30700:31000]), color = "C1")
+
 simulated = simulated_spectre("default",np.array(wavelengths[30700:31000]),peaks[0],**peaks[1])        
 sns.lineplot(x = wavelengths[30700:31000], y = simulated)
 
-peaks = find_peaks(df_wavvisu.loc[0], height = 1000, width = 1)
+peaks = find_peaks(df_wavvisu.loc[0], height = 750, width = 1)
 is_peak = np.zeros((40002,))
 is_peak[peaks[0]] = 1
 ax = sns.lineplot(x = wavelengths, y = df_wavvisu.loc[0])
@@ -111,6 +119,10 @@ sns.lineplot(x = wavelengths, y = simulated)
 simulated = simulated_spectre("Yang2018",np.array(wavelengths),peaks[0],**peaks[1])        
 sns.lineplot(x = wavelengths, y = simulated)
 
-sigma = np.std(wavelengths[0:2500])
+sigma = np.std(df_wavvisu.loc[0][0:2500])
+noise = np.random.normal(0,sigma,40002)
+sns.lineplot(x = wavelengths, y = simulated + noise)
+
+sigma = np.std(df_wavvisu.loc[0][40002-2500:])
 noise = np.random.normal(0,sigma,40002)
 sns.lineplot(x = wavelengths, y = simulated + noise)
