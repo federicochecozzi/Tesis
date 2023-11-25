@@ -6,10 +6,12 @@ Created on Mon Nov 20 19:34:14 2023
 """
 
 import pandas as pd
+import numpy as np
 from sklearn.metrics import mean_squared_error
 import os
 from skimage.restoration import denoise_wavelet
 import seaborn as sns
+import pingouin as pg
 
 def calculate_MSE(df1,df2):
     df_merged = pd.concat([df1, df2], axis = 1)
@@ -34,4 +36,14 @@ MSE1 = calculate_MSE(df_simulated, df_simulated_noisy)
 MSE2 = calculate_MSE(df_simulated, df_wavbayes)
 MSE3 = calculate_MSE(df_simulated, df_wavvisu)
 
-sns.histplot(data = pd.concat([MSE1,MSE2,MSE3], axis = 1).rename(columns = {0:"Señal ruidosa",1:"BayesShrink",2:"VisuShrink"}))
+df_MSE = data = pd.concat([MSE1,MSE2,MSE3], axis = 1).rename(columns = {0:"Señal ruidosa",1:"BayesShrink",2:"VisuShrink"})
+
+sns.histplot(df_MSE)
+
+friedman = pg.friedman(df_MSE)
+
+test1 = pg.wilcoxon(MSE1,MSE2)
+test2 = pg.wilcoxon(MSE1,MSE3)
+test3 = pg.wilcoxon(MSE2,MSE3)
+
+print(np.mean(MSE1),np.mean(MSE2),np.mean(MSE3))
