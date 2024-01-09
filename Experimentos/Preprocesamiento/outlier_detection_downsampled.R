@@ -1,4 +1,6 @@
+#problemas con SVD, no usar
 library(rhdf5)
+library(rospca)
 #library(mlr)
 
 
@@ -52,9 +54,15 @@ gc()
 
 #debug
 
-#pcar <- robpca(trainData[trainClass == 1,])
+#start_time <- Sys.time()
+
+#pcar <- robpca(trainData[trainClass == 1,], ndir = 10)
 
 #pcar$flag.all #acá está un flag que detecta outliers
+
+#end_time <- Sys.time()
+
+#end_time - start_time
 
 start_time <- Sys.time()
 
