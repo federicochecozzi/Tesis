@@ -20,8 +20,11 @@ centroid <- spectres_processed[class$trainClass == 1,sapply(.SD,median)]
 centered_subset <- subset[,Map(`-`, .SD, centroid)]#subset - t(centroid)
 
 #distance <- centered_subset[,.(rowSums(.SD**2))]
-distance <- centered_subset[,rowSums(.SD**2)]
+distance <- centered_subset[,sqrt(rowSums(.SD**2))]
 
 
 q <- quantile(distance,probs = c(0.05,0.95))
 
+ggplot() + 
+  geom_histogram(aes(x = distance)) +
+  geom_vline(xintercept = q)
