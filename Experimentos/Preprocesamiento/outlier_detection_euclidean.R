@@ -1,8 +1,6 @@
-#problemas con SVD, no usar
-
 library(rhdf5)
-library(rospca)
-#library(mlr)
+library(tidyverse)
+library(data.table)
 
 
 # In case of insufficent memory, uncomment following line. Your disc will be used as buffer and data might be loaded
@@ -32,7 +30,7 @@ trainData <- lapply(trainData,reddim)
 
 ##########################################
 
-trainData <- as.data.frame(do.call('rbind',trainData))
+trainData <- as.data.table(do.call('rbind',trainData))
 tempClass <- vector()
 redClass <- trainClass[(1):(spectraCount),]
 for (i in c(seq(500,49500,500))){
@@ -51,36 +49,4 @@ gc()
 # End of loading script
 ##########################################
 
-#Búsqueda de outliers
-
-#debug
-
-#start_time <- Sys.time()
-
-#pcar <- robpca(trainData[trainClass == 1,], ndir = 10)
-
-#pcar$flag.all #acá está un flag que detecta outliers
-
-#end_time <- Sys.time()
-
-#end_time - start_time
-
-start_time <- Sys.time()
-
-outlier.flag <- c()
-
-for (i in 1:12){
-  print(i)
-  pcar <- robpca(trainData[trainClass == i,])
-  
-  outlier.flag <-  pcar$flag.all #acá está un flag que detecta outliers
-}
-
-keep.flag <- !outlier.flag
-
-end_time <- Sys.time()
-
-end_time - start_time
-
-#¿Directorio?
-#write.csv(keep.flag, file ="to_keep_downsampled.csv", row.names=FALSE)
+#trainData[trainClass == 1,]
