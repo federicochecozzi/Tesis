@@ -14,9 +14,9 @@ spectraCount <- 500   # selecting the number of spectra for each sample (maximum
 # Train Data
 ##########################################
 
-wavelengths <- as.data.frame(h5read(file = "train_downsampled.h5", name = "Wavelengths")) # import wavelengths
-trainClass <- as.data.frame(h5read(file = "train_downsampled.h5", name = "Class")) # import classes
-trainData <- h5read(file = "train_downsampled.h5", name = "Spectra") # import spectra
+wavelengths <- as.data.frame(h5read(file = "train.h5", name = "Wavelengths")) # import wavelengths
+trainClass <- as.data.frame(h5read(file = "train.h5", name = "Class")) # import classes
+trainData <- h5read(file = "train.h5", name = "Spectra") # import spectra
 h5closeAll()
 
 ##########################################
@@ -50,3 +50,32 @@ gc()
 ##########################################
 
 #trainData[trainClass == 1,]
+subset <- spectres_processed[class$trainClass == 1]
+
+centroid <- spectres_processed[class$trainClass == 1,sapply(.SD,median)]
+
+#https://stackoverflow.com/questions/46406029/data-table-minus-one-vector
+#https://stackoverflow.com/questions/46843926/broadcasting-in-r
+centered_subset <- subset[,Map(`-`, .SD, centroid)]#subset - t(centroid)
+
+#distance <- centered_subset[,.(rowSums(.SD**2))]
+distance <- centered_subset[,sqrt(rowSums(.SD**2))]
+
+
+q1 <- quantile(distance,probs = c(0.05,0.95))
+
+ggplot() + 
+  geom_histogram(aes(x = distance)) +
+  geom_vline(xintercept = q1)
+
+q2 <- quantile(distance,probs = c(0.025,0.975))
+
+ggplot() + 
+  geom_histogram(aes(x = distance)) +
+  geom_vline(xintercept = q2)
+
+q3 <- quantile(distance,probs = c(0.01,0.99))
+
+ggplot() + 
+  geom_histogram(aes(x = distance)) +
+  geom_vline(xintercept = q3)
