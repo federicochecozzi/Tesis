@@ -49,33 +49,57 @@ gc()
 # End of loading script
 ##########################################
 
-#trainData[trainClass == 1,]
-subset <- spectres_processed[class$trainClass == 1]
+#Prueba con una clase
+#subset <- trainData[trainClass == 1]
 
-centroid <- spectres_processed[class$trainClass == 1,sapply(.SD,median)]
+#centroid <- trainData[trainClass == 1,sapply(.SD,median)]
 
 #https://stackoverflow.com/questions/46406029/data-table-minus-one-vector
 #https://stackoverflow.com/questions/46843926/broadcasting-in-r
-centered_subset <- subset[,Map(`-`, .SD, centroid)]#subset - t(centroid)
+#centered_subset <- subset[,Map(`-`, .SD, centroid)]#subset - t(centroid)
 
 #distance <- centered_subset[,.(rowSums(.SD**2))]
-distance <- centered_subset[,sqrt(rowSums(.SD**2))]
+#distance <- centered_subset[,sqrt(rowSums(.SD**2))]
 
 
-q1 <- quantile(distance,probs = c(0.05,0.95))
+#q1 <- quantile(distance,probs = 0.95)
 
-ggplot() + 
-  geom_histogram(aes(x = distance)) +
-  geom_vline(xintercept = q1)
+#ggplot() + 
+#  geom_histogram(aes(x = distance)) +
+#  geom_vline(xintercept = q1) +
+#  ggtitle(paste0("Clase:",1,", cutoff = 0.95"))
 
-q2 <- quantile(distance,probs = c(0.025,0.975))
+#q2 <- quantile(distance,probs = 0.975)
 
-ggplot() + 
-  geom_histogram(aes(x = distance)) +
-  geom_vline(xintercept = q2)
+#ggplot() + 
+#  geom_histogram(aes(x = distance)) +
+#  geom_vline(xintercept = q2)
 
-q3 <- quantile(distance,probs = c(0.01,0.99))
+#q3 <- quantile(distance,probs = 0.99)
 
-ggplot() + 
-  geom_histogram(aes(x = distance)) +
-  geom_vline(xintercept = q3)
+#ggplot() + 
+#  geom_histogram(aes(x = distance)) +
+#  geom_vline(xintercept = q3)
+
+#ggplot() + 
+#  geom_histogram(aes(x = distance)) +
+#  geom_vline(xintercept = c(q1,q2,q3))
+
+#Todas las clases
+setwd(r"(D:\Tesis\Algunos resultados\outliers)")
+pdf("euclidean_outliers.pdf")
+for(c in 1:12){
+  print(c)
+  subset <- trainData[trainClass == c]
+  centroid <- subset[,sapply(.SD,median)]
+  centered_subset <- subset[,Map(`-`, .SD, centroid)]
+  distance <- centered_subset[,sqrt(rowSums(.SD**2))]
+  q <- quantile(distance,probs = c(0.95,0.975,0.99))
+
+  p <- ggplot() + 
+      geom_histogram(aes(x = distance)) +
+      geom_vline(xintercept = q) +
+      ggtitle(paste0("Class:",c,", quantiles: 0.95, 0.975, 0.99"))
+  print(p)
+}
+dev.off()
