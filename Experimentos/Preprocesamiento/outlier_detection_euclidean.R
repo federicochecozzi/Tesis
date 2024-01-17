@@ -14,9 +14,9 @@ spectraCount <- 500   # selecting the number of spectra for each sample (maximum
 # Train Data
 ##########################################
 
-wavelengths <- as.data.frame(h5read(file = "train.h5", name = "Wavelengths")) # import wavelengths
-trainClass <- as.data.frame(h5read(file = "train.h5", name = "Class")) # import classes
-trainData <- h5read(file = "train.h5", name = "Spectra") # import spectra
+wavelengths <- as.data.frame(h5read(file = "train_processed.h5", name = "Wavelengths")) # import wavelengths
+trainClass <- as.data.frame(h5read(file = "train_processed.h5", name = "Class")) # import classes
+trainData <- h5read(file = "train_processed.h5", name = "Spectra") # import spectra
 h5closeAll()
 
 ##########################################
