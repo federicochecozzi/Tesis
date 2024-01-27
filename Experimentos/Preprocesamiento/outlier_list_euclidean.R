@@ -63,8 +63,8 @@ for(c in 1:12){
   distance <- centered_subset[,sqrt(rowSums(.SD**2))]
   q <- quantile(distance,probs = c(0.95,0.975,0.99))
   q95 = c(q95,distance > q[1])
-  q975 = c(q95,distance > q[2])
-  q99 = c(q95,distance > q[3])
+  q975 = c(q975,distance > q[2])
+  q99 = c(q99,distance > q[3])
 }
 
 fwrite(list(q95 = q95, q975 = q975, q99 = q99),
