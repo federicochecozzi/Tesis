@@ -63,6 +63,7 @@ setwd(r"(D:\Tesis\Algunos resultados\outliers)")
 outlier_list <- fread("outlier_list.csv", dec = ',',header = TRUE)
 
 trainData <- trainData[outlier_list$q99 == FALSE,]
+trainClass <- trainClass[outlier_list$q99 == FALSE]
 
 ##########################################
 
