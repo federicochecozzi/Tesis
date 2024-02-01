@@ -1,8 +1,8 @@
 library(tidyverse)
 library(data.table)
+library(caret)
 library(mdatools)
 library(rhdf5)
-library(caret)
 #library(mlr)
 
 
@@ -128,6 +128,6 @@ apply(ypred[,60,],1,function(x) any(x > 0))
 
 testClassfactor <- as.factor(testClass)
 levels(testClassfactor) <- c(levels(testClassfactor),'12')
-confusionMatrix(as.factor(testClass),as.factor(apply(ypred[,60,],1,which.max)))
+confusionMatrix(as.factor(testClass),as.factor(apply(ypred[,60,],1,which.max)))#73.43
 confusionMatrix(as.factor(testClass),as.factor(apply(ypred[,45,],1,which.max)))
 confusionMatrix(as.factor(apply(ypred[,45,],1,which.max)),testClassfactor)
