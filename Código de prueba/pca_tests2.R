@@ -9,7 +9,7 @@ library(rospca)
 
 # set number of spectra and path to the data files
 setwd(r"(D:\Tesis\Datasets)")     # selecting the directory containing the data files
-spectraCount <- 500   # selecting the number of spectra for each sample (maximum of 500), recommended 100
+spectraCount <- 100   # selecting the number of spectra for each sample (maximum of 500), recommended 100
 
 ##########################################
 # Train Data
@@ -47,7 +47,7 @@ gc()
 
 start_time <- Sys.time()
 
-pca <- prcomp(trainData)
+pca <- prcomp(trainData) #3.870174 hours
 
 end_time <- Sys.time()
 
@@ -55,7 +55,7 @@ end_time - start_time
 
 start_time <- Sys.time()
 
-pcar <- robpca(trainData)
+pcar <- robpca(trainData, ndir = 5000) #5.533914 hours
 
 end_time <- Sys.time()
 
