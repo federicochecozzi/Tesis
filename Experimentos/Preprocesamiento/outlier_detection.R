@@ -16,9 +16,9 @@ spectraCount <- 500   # selecting the number of spectra for each sample (maximum
 # Train Data
 ##########################################
 
-wavelengths <- as.data.frame(h5read(file = "train.h5", name = "Wavelengths")) # import wavelengths
-trainClass <- as.data.frame(h5read(file = "train.h5", name = "Class")) # import classes
-trainData <- h5read(file = "train.h5", name = "Spectra") # import spectra
+wavelengths <- as.data.frame(h5read(file = "train_processed.h5", name = "Wavelengths")) # import wavelengths
+trainClass <- as.data.frame(h5read(file = "train_processed.h5", name = "Class")) # import classes
+trainData <- h5read(file = "train_processed.h5", name = "Spectra") # import spectra
 h5closeAll()
 
 ##########################################
@@ -67,20 +67,21 @@ gc()
 
 start_time <- Sys.time()
 
-outlier.flag <- c()
+keep.flag <- c()
 
 for (i in 1:12){
   print(i)
   pcar <- robpca(trainData[trainClass == i,], ndir = 5000)
   
-  outlier.flag <- c(outlier.flag,pcar$flag.all) #acá está un flag que detecta outliers
+  keep.flag <- c(keep.flag,pcar$flag.all) #acá está un flag que detecta outliers
 }
 
-keep.flag <- !outlier.flag
+#keep.flag <- !outlier.flag
 
 end_time <- Sys.time()
 
-end_time - start_time #13.52352 hours
+end_time - start_time #14.22507  hours
 
-#¿Directorio?
-#write.csv(keep.flag, file ="to_keep_downsampled.csv", row.names=FALSE)
+setwd(r"(D:\Tesis\Algunos resultados\outliers)")  
+
+write.csv(keep.flag, file ="keep_list_PCAR.csv", row.names=FALSE)
