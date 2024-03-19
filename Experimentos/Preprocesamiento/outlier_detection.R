@@ -71,7 +71,7 @@ keep.flag <- c()
 
 for (i in 1:12){
   print(i)
-  pcar <- robpca(trainData[trainClass == i,], ndir = 5000)
+  pcar <- robpca(trainData[trainClass == i,], ndir = 1000)
   
   keep.flag <- c(keep.flag,pcar$flag.all) #acá está un flag que detecta outliers
 }
