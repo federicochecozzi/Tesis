@@ -60,7 +60,7 @@ for(c in 1:12){
   subset <- trainData[trainClass == c]
   centroid <- subset[,sapply(.SD,median)]
   sqrsum <- sum(centroid^2)
-  distance <- subset[,1-sum(.SD*centroid)/sqrt(sum(.SD^2)*sqrsum)]
+  distance <- apply(subset,1,function(x) 1-sum(x*centroid)/sqrt(sum(x^2)*sqrsum))
   
   q <- quantile(distance,probs = c(0.95,0.975,0.99))
   q95 = c(q95,distance > q[1])
