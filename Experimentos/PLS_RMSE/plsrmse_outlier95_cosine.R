@@ -60,10 +60,10 @@ testData <- as.data.frame(do.call('rbind',testData))
 ##########################################
 setwd(r"(D:\Tesis\Algunos resultados\outliers)")
 
-outlier_list <- fread("outlier_list_euclidean.csv", dec = ',',header = TRUE)
+outlier_list <- fread("outlier_list_cosine.csv", dec = ',',header = TRUE)
 
-trainData <- trainData[outlier_list$q99 == FALSE,]
-trainClass <- trainClass[outlier_list$q99 == FALSE]
+trainData <- trainData[outlier_list$q95 == FALSE,]
+trainClass <- trainClass[outlier_list$q95 == FALSE]
 
 ##########################################
 
@@ -138,6 +138,6 @@ apply(ypred[,60,],1,function(x) any(x > 0))
 
 testClassfactor <- as.factor(testClass)
 levels(testClassfactor) <- c(levels(testClassfactor),'12')
-confusionMatrix(as.factor(testClass),as.factor(apply(ypred[,60,],1,which.max))) #73.42
+confusionMatrix(as.factor(testClass),as.factor(apply(ypred[,60,],1,which.max))) #73.3
 confusionMatrix(as.factor(testClass),as.factor(apply(ypred[,45,],1,which.max)))
 confusionMatrix(as.factor(apply(ypred[,45,],1,which.max)),testClassfactor)

@@ -69,6 +69,6 @@ for(c in 1:12){
 }
 
 fwrite(list(q95 = q95, q975 = q975, q99 = q99),
-       file = "outlier_list.csv",
+       file = "outlier_list_cosine.csv",
        sep = ","
 )

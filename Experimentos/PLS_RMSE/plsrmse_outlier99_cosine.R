@@ -60,7 +60,7 @@ testData <- as.data.frame(do.call('rbind',testData))
 ##########################################
 setwd(r"(D:\Tesis\Algunos resultados\outliers)")
 
-outlier_list <- fread("outlier_list_euclidean.csv", dec = ',',header = TRUE)
+outlier_list <- fread("outlier_list_cosine.csv", dec = ',',header = TRUE)
 
 trainData <- trainData[outlier_list$q99 == FALSE,]
 trainClass <- trainClass[outlier_list$q99 == FALSE]
