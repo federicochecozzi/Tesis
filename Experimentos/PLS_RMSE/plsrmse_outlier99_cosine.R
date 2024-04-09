@@ -79,7 +79,7 @@ model <- plsda(trainData,as.factor(trainClass),cv = list('ven', 5),ncomp = 60)
 end_time <- Sys.time()
 
 end_time - start_time
-#7.533855 hours
+#7.487427 hours
 
 summary(model)
 
@@ -95,7 +95,7 @@ test_res = predict(model, testData, as.factor(testClass), ncomp = 60)
 end_time <- Sys.time()
 
 end_time - start_time
-#8.567268 mins
+#8.345474 mins
 
 summary(test_res)
 
