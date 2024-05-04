@@ -79,12 +79,13 @@ start_time <- Sys.time()
 #v[seq(1,100,1)%%5 == 1]
 #c = confusionMatrix(as.factor(c(1,2,3)), as.factor(c(1,3,2)))
 #c$overall['Accuracy']
-acc_matrix <- matrix(c(), nrow = 5, ncol = 60)
+acc_matrix <- matrix(c(0), nrow = 5, ncol = 60)
 index <- seq(1,49500,1)
 for (i in 0:4) {
-  model <- plsda(trainData[index[seq(1,49500,1)%%5 != i]],as.factor(trainClass[index[seq(1,49500,1)%%5 != i]]),cv = NULL,ncomp = 60)
+  print(paste("i = ",i))
+  model <- plsda(trainData[index[seq(1,49500,1)%%5 != i],],as.factor(trainClass[index[seq(1,49500,1)%%5 != i]]),cv = NULL,ncomp = 60)
   labels <- as.factor(trainClass[index[seq(1,49500,1)%%5 == i]])
-  test_res <- predict(model, trainData[index[seq(1,49500,1)%%5 == i]], labels)
+  test_res <- predict(model, trainData[index[seq(1,49500,1)%%5 == i],], labels)
   #pred_class <- test_res$c.pred
   ypred <- test_res$y.pred
   
@@ -93,8 +94,11 @@ for (i in 0:4) {
   #levels(testClassfactor) <- c(levels(testClassfactor),'12') 
   #usar setdiff si vas a copiar esto, orden de los factores no importa
   for (j in 1:60){
-    print("i = ",i,", j = ",j)
-    confmat <- confusionMatrix(labels,as.factor(apply(ypred[,j,],1,which.max))) 
+    print(paste("i = ",i,", j = ",j))
+    predlabels <- as.factor(apply(ypred[,j,],1,which.max))
+    levels(predlabels) <- c(levels(predlabels),setdiff(levels(labels),levels(predlabels)))
+    #In confusionMatrix.default(labels, predlabels) : Levels are not in the same order for reference and data. Refactoring data to match.
+    confmat <- confusionMatrix(labels,predlabels) 
     if(i){
       acc_matrix[i,j] <- confmat$overall['Accuracy']
     } else {
@@ -105,44 +109,43 @@ for (i in 0:4) {
 end_time <- Sys.time()
 
 end_time - start_time
-#7.533855 hours
+#7.325073 hours
 
-ggplot() %>%
-  geom_line(aes(x = 1:60, y = apply(acc_matrix, 2, mean)))
-#as.data.frame(acc_matrix) %>%
+ggplot() +
+  geom_line(aes(x = 1:60, y = apply(1-acc_matrix, 2, mean))) +
+  labs(x = "Components", y = "Error rate")
 
-#summary(model)
+ncomp <- which.min(apply(1-acc_matrix, 2, mean))
 
-#plotRMSE(model)
+start_time <- Sys.time()
+model <- plsda(trainData,as.factor(trainClass),cv = NULL,ncomp = ncomp)
+end_time <- Sys.time()
 
-#plotPredictions(model, ncomp = 60)
-#plotPredictions(structure(model, class = "regmodel"), ncomp = 14, ny = 3)
+end_time - start_time
 
-#start_time <- Sys.time()
-#test_res = predict(model, testData, as.factor(testClass), ncomp = 60)
-#end_time <- Sys.time()
+start_time <- Sys.time()
+test_res = predict(model, testData, as.factor(testClass))
+end_time <- Sys.time()
 
-#end_time - start_time
-#8.567268 mins
+end_time - start_time
 
-#summary(test_res)
+summary(test_res)
 
-#plotPredictions(test_res, ncomp = 60)
+plotPredictions(test_res, ncomp = ncomp)
 
-#plotXResiduals(test_res, ncomp = 60)
+plotXResiduals(test_res, ncomp = ncomp)
 
-#confmat <- getConfusionMatrix(test_res, ncomp = 60)
-#confmat
+confmat <- getConfusionMatrix(test_res, ncomp = ncomp)
+confmat
 
-#accuracy <- sum(diag(confmat))/sum(confmat) * 100
-#accuracy
+accuracy <- sum(diag(confmat))/sum(confmat) * 100
+accuracy
 #57.28198
 
-#showPredictions(test_res, ncomp = 14)
+showPredictions(test_res, ncomp = ncomp)
 
-#pred_class <- test_res$c.pred
-#ypred <- test_res$y.pred
+ypred <- test_res$y.pred
 
-#testClassfactor <- as.factor(testClass)
-#levels(testClassfactor) <- c(levels(testClassfactor),'12')
-#confusionMatrix(as.factor(testClass),as.factor(apply(ypred[,60,],1,which.max))) #73.42
+testClassfactor <- as.factor(testClass)
+levels(testClassfactor) <- c(levels(testClassfactor),'12')
+confusionMatrix(as.factor(testClass),as.factor(apply(ypred[,ncomp,],1,which.max))) #73.42
