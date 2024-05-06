@@ -122,12 +122,14 @@ model <- plsda(trainData,as.factor(trainClass),cv = NULL,ncomp = ncomp)
 end_time <- Sys.time()
 
 end_time - start_time
+#1.766978 hours
 
 start_time <- Sys.time()
 test_res = predict(model, testData, as.factor(testClass))
 end_time <- Sys.time()
 
 end_time - start_time
+#8.078789 mins
 
 summary(test_res)
 
@@ -140,7 +142,7 @@ confmat
 
 accuracy <- sum(diag(confmat))/sum(confmat) * 100
 accuracy
-#57.28198
+#57.2356
 
 showPredictions(test_res, ncomp = ncomp)
 
@@ -148,4 +150,4 @@ ypred <- test_res$y.pred
 
 testClassfactor <- as.factor(testClass)
 levels(testClassfactor) <- c(levels(testClassfactor),'12')
-confusionMatrix(as.factor(testClass),as.factor(apply(ypred[,ncomp,],1,which.max))) #73.42
+confusionMatrix(as.factor(testClass),as.factor(apply(ypred[,ncomp,],1,which.max))) #73.43
