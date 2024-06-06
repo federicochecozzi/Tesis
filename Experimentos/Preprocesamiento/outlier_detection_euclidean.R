@@ -90,7 +90,7 @@ setwd(r"(D:\Tesis\Algunos resultados\outliers)")
 pdf("euclidean_outliers.pdf")
 for(c in 1:12){
   print(c)
-  subset <- trainData[trainClass == c]
+  subset <- trainData[trainClass == c,]
   centroid <- subset[,sapply(.SD,median)]
   centered_subset <- subset[,Map(`-`, .SD, centroid)]
   distance <- centered_subset[,sqrt(rowSums(.SD**2))]

@@ -57,7 +57,7 @@ q99 = c()
 
 for(c in 1:12){
   print(c)
-  subset <- trainData[trainClass == c]
+  subset <- trainData[trainClass == c,]
   centroid <- subset[,sapply(.SD,median)]
   sqrsum <- sum(centroid^2)
   distance <- apply(subset,1,function(x) 1-sum(x*centroid)/sqrt(sum(x^2)*sqrsum))

@@ -1,5 +1,6 @@
 library(data.table)
 library(rhdf5)
+library(matrixStats)
 library(pcaMethods)
 
 
@@ -61,8 +62,8 @@ start_time <- Sys.time()
 
 for(c in 1:12){
   print(c)
-  subset <- trainData[trainClass == c]
-  resRobPca <- pca(subset, method="robustPca", nPcs=10000, center=FALSE)
+  subset <- trainData[trainClass == c,]
+  resRobPca <- pca(subset, method="robustPca", nPcs=1000, center=FALSE)
   print(paste("R2cum",R2cum(resRobPca)))
 }
 
