@@ -62,8 +62,8 @@ setwd(r"(D:\Tesis\Algunos resultados\outliers)")
 
 outlier_list <- fread("outlier_list_euclidean.csv")
 
-trainData <- trainData[outlier_list$q99 == FALSE,]
-trainClass <- trainClass[outlier_list$q99 == FALSE]
+trainData <- trainData[outlier_list$q95 == FALSE,]
+trainClass <- trainClass[outlier_list$q95 == FALSE]
 
 ##########################################
 
@@ -101,7 +101,7 @@ for (i in 0:4) {
 end_time <- Sys.time()
 
 end_time - start_time
-#7.398034 hours
+#7.222621 hours
 
 ggplot() +
   geom_line(aes(x = 1:60, y = apply(1-acc_matrix, 2, mean))) +
@@ -114,14 +114,14 @@ model <- plsda(trainData,as.factor(trainClass),cv = NULL,ncomp = ncomp)
 end_time <- Sys.time()
 
 end_time - start_time
-#1.820162 hours
+#1.711905 hours
 
 start_time <- Sys.time()
 test_res = predict(model, testData, as.factor(testClass))
 end_time <- Sys.time()
 
 end_time - start_time
-#9.774668 mins
+#9.723301 mins
 
 summary(test_res)
 
@@ -134,7 +134,7 @@ confmat
 
 accuracy <- sum(diag(confmat))/sum(confmat) * 100
 accuracy
-#57.28198
+#57.50447
 
 showPredictions(test_res, ncomp = ncomp)
 
@@ -142,4 +142,4 @@ ypred <- test_res$y.pred
 
 testClassfactor <- as.factor(testClass)
 levels(testClassfactor) <- c(levels(testClassfactor),'12')
-confusionMatrix(as.factor(testClass),as.factor(apply(ypred[,ncomp,],1,which.max))) #0.7342
+confusionMatrix(as.factor(testClass),as.factor(apply(ypred[,ncomp,],1,which.max))) #73.43

@@ -33,7 +33,7 @@ trainData <- lapply(trainData,reddim)
 
 ##########################################
 
-trainData <- as.data.frame(do.call('rbind',trainData))
+trainData <- as.data.table(do.call('rbind',trainData))
 tempClass <- vector()
 redClass <- trainClass[(1):(spectraCount),]
 for (i in c(seq(500,49500,500))){
@@ -77,12 +77,12 @@ gc()
 start_time <- Sys.time()
 
 acc_matrix <- matrix(c(0), nrow = 5, ncol = 60)
-index <- seq(1,49500,1)
+index <- seq(1,nrow(trainData),1)
 for (i in 0:4) {
   print(paste("i = ",i))
-  model <- plsda(trainData[index[seq(1,49500,1)%%5 != i],],as.factor(trainClass[index[seq(1,49500,1)%%5 != i]]),cv = NULL,ncomp = 60)
-  labels <- as.factor(trainClass[index[seq(1,49500,1)%%5 == i]])
-  test_res <- predict(model, trainData[index[seq(1,49500,1)%%5 == i],], labels)
+  model <- plsda(trainData[index[index%%5 != i],],as.factor(trainClass[index[index%%5 != i]]),cv = NULL,ncomp = 60)
+  labels <- as.factor(trainClass[index[index%%5 == i]])
+  test_res <- predict(model, trainData[index[index%%5 == i],], labels)
   
   ypred <- test_res$y.pred
   
@@ -101,7 +101,7 @@ for (i in 0:4) {
 end_time <- Sys.time()
 
 end_time - start_time
-#
+#7.429369 hours
 
 ggplot() +
   geom_line(aes(x = 1:60, y = apply(1-acc_matrix, 2, mean))) +
@@ -114,14 +114,14 @@ model <- plsda(trainData,as.factor(trainClass),cv = NULL,ncomp = ncomp)
 end_time <- Sys.time()
 
 end_time - start_time
-#
+#1.799519 hours
 
 start_time <- Sys.time()
 test_res = predict(model, testData, as.factor(testClass))
 end_time <- Sys.time()
 
 end_time - start_time
-#
+#9.853348 mins
 
 summary(test_res)
 
@@ -134,7 +134,7 @@ confmat
 
 accuracy <- sum(diag(confmat))/sum(confmat) * 100
 accuracy
-#
+#57.28198
 
 showPredictions(test_res, ncomp = ncomp)
 
@@ -142,4 +142,4 @@ ypred <- test_res$y.pred
 
 testClassfactor <- as.factor(testClass)
 levels(testClassfactor) <- c(levels(testClassfactor),'12')
-confusionMatrix(as.factor(testClass),as.factor(apply(ypred[,ncomp,],1,which.max))) #
+confusionMatrix(as.factor(testClass),as.factor(apply(ypred[,ncomp,],1,which.max))) #73.42%
