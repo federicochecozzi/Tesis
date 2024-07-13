@@ -61,6 +61,8 @@ for(c in 1:12){
   pcoutlier = c(pcoutlier, result$wfinal < 0.25)
 }
 
+hist(trainClass[pcoutlier == FALSE])
+
 fwrite(list(pcoutlier = pcoutlier),
        file = "outlier_list_pcout.csv",
        sep = ","
