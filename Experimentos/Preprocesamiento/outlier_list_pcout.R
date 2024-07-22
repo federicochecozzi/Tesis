@@ -54,26 +54,36 @@ setwd(r"(D:\Tesis\Algunos resultados\outliers)")
 pcoutlierp25 = c()
 pcoutlierp10 = c()
 pcoutlierp05 = c()
-pcoutlierp01 = c()
+pcoutlierp045 = c()
+pcoutlierp04 = c()
+pcoutlierp035 = c()
+pcoutlierp03 = c()
 
 for(c in 1:12){
   print(c)
   subset <- trainData[trainClass == c,]
   result <- pcout(subset)
   
-  pcoutlier25 = c(pcoutlier, result$wfinal < 0.25)
-  pcoutlier10 = c(pcoutlier, result$wfinal < 0.10)
-  pcoutlier05 = c(pcoutlier, result$wfinal < 0.05)
-  pcoutlier01 = c(pcoutlier, result$wfinal < 0.01)
+  pcoutlierp25 = c(pcoutlierp25, result$wfinal < 0.25)
+  pcoutlierp10 = c(pcoutlierp10, result$wfinal < 0.10)
+  pcoutlierp05 = c(pcoutlierp05, result$wfinal < 0.05)
+  pcoutlierp045 = c(pcoutlierp045, result$wfinal < 0.045)
+  pcoutlierp04 = c(pcoutlierp04, result$wfinal < 0.04)
 }
 
-hist(trainClass[pcoutlier25 == FALSE])
-hist(trainClass[pcoutlier10 == FALSE])
-hist(trainClass[pcoutlier05 == FALSE])
-hist(trainClass[pcoutlier01 == FALSE])
+hist(trainClass[pcoutlierp25 == FALSE])
+sum(pcoutlierp25)
+hist(trainClass[pcoutlierp10 == FALSE])
+sum(pcoutlierp10)
+hist(trainClass[pcoutlierp05 == FALSE])
+sum(pcoutlierp05)
+hist(trainClass[pcoutlierp045 == FALSE])
+sum(pcoutlierp045)#a partir de acá no vale la pena demasiado
+hist(trainClass[pcoutlierp04 == FALSE])
+sum(pcoutlierp04)#se va a cero, tendría que hilar muy fino o almacenar resultados para encontrar un buen punto de corte
 
-fwrite(list(pcoutlier25 = pcoutlier25, pcoutlier10 = pcoutlier10, 
-            pcoutlier05 = pcoutlier05, pcoutlier01 = pcoutlier01),
+fwrite(list(pcoutlierp25 = pcoutlierp25, pcoutlierp10 = pcoutlierp10, 
+            pcoutlierp05 = pcoutlierp05, pcoutlierp045 = pcoutlierp045),
        file = "outlier_list_pcout.csv",
        sep = ","
 )
