@@ -51,24 +51,26 @@ gc()
 
 setwd(r"(D:\Tesis\Algunos resultados\outliers)")
 
-pcoutlierp25 = c()
-pcoutlierp10 = c()
-pcoutlierp05 = c()
-pcoutlierp045 = c()
-pcoutlierp04 = c()
-pcoutlierp035 = c()
-pcoutlierp03 = c()
+pcoutlierp25 <- c()
+pcoutlierp10 <- c()
+pcoutlierp05 <- c()
+pcoutlierp045 <- c()
+pcoutlierp04 <- c()
+pcoutlierp035 <- c()
+pcoutlierp03 <- c()
+weights <- c()
 
 for(c in 1:12){
   print(c)
   subset <- trainData[trainClass == c,]
   result <- pcout(subset)
   
-  pcoutlierp25 = c(pcoutlierp25, result$wfinal < 0.25)
-  pcoutlierp10 = c(pcoutlierp10, result$wfinal < 0.10)
-  pcoutlierp05 = c(pcoutlierp05, result$wfinal < 0.05)
-  pcoutlierp045 = c(pcoutlierp045, result$wfinal < 0.045)
-  pcoutlierp04 = c(pcoutlierp04, result$wfinal < 0.04)
+  pcoutlierp25 <- c(pcoutlierp25, result$wfinal < 0.25)
+  pcoutlierp10 <- c(pcoutlierp10, result$wfinal < 0.10)
+  pcoutlierp05 <- c(pcoutlierp05, result$wfinal < 0.05)
+  pcoutlierp045 <- c(pcoutlierp045, result$wfinal < 0.045)
+  pcoutlierp04 <- c(pcoutlierp04, result$wfinal < 0.04)
+  weights <- c(weights, result$wfinal)
 }
 
 hist(trainClass[pcoutlierp25 == FALSE])
@@ -87,3 +89,5 @@ fwrite(list(pcoutlierp25 = pcoutlierp25, pcoutlierp10 = pcoutlierp10,
        file = "outlier_list_pcout.csv",
        sep = ","
 )
+
+fwrite(list(weights = weights), file = "pcout_weights.csv", sep = ",")
