@@ -83,12 +83,13 @@ y <- model$calres$y.pred[,ncomp,] #esto genera una matriz de n observaciones por
 density.function.list <- list()
 for (i in 1:12){
   density.function <- approxfun(density(y[,i]))
-  append(density.function.list,density.function)
+  #append(density.function.list,density.function)
+  density.function.list[[i]] <- density.function
 }
 
 end_time <- Sys.time()
 
-end_time - start_time
+end_time - start_time#1.735994 hours
 
 #Predicción con regla bayesiana
 
@@ -111,12 +112,13 @@ ypred <- ypred[,ncomp,]
 #regla detallada en: Statistical comparison of decision rules in PLS2-DA prediction model for 
 #classification of blue gel pen inks according to pen brand and pen model
 #class.pred <- integer(nrow(testData))
-pmatrix <- numeric(nrow(testData),12)
+pmatrix <- matrix(0,nrow(testData),12)#numeric(nrow(testData),12)
 pvector <- numeric(12)
 priors <- rep(1/12, 12)
 for (i in 1:nrow(testData)){
   for (j in 1:12){
-    pvector[j] <- density.function.list[[j]](ypred[i,j]) * priors[j]
+    p <- density.function.list[[j]](ypred[i,j]) * priors[j]
+    pvector[j] <- ifelse(is.na(p),0,p) #si está fuera del rango de la interpolación asumo que la densidad es cero
   }
   pvector <- pvector/sum(pvector)
   pmatrix[i,] <- pvector
@@ -126,7 +128,7 @@ class.pred <- as.factor(apply(pmatrix,1,which.max))
 
 testClassfactor <- as.factor(testClass)
 levels(testClassfactor) <- c(levels(testClassfactor),'12')
-confusionMatrix(as.factor(testClass),class.pred) #
+confusionMatrix(as.factor(testClass),class.pred) #4e-04 (!)
 
 
 end_time <- Sys.time()
