@@ -35,6 +35,7 @@ for sample in list(testFile["UNKNOWN"].keys()):
     else:
         testData = np.append(testData, decimate(tempData.transpose(),q = downsampling_factor,axis = 1), axis = 0)
 
+testClass = np.loadtxt("test_labels.csv", dtype = 'int')
 
 # creates a two-dimensional array (matrix) containing the testing data
 # each row represents a single spectrum
@@ -54,7 +55,9 @@ print(end - start)
 testFile = h5py.File('test_d8_sc250.h5','w')
 
 grp_unknown = testFile.create_group("Spectra")
+grp_class = testFile.create_group("Class")
 
 grp_unknown.create_dataset('1', data = np.transpose(testData), compression="gzip", compression_opts=7)
+grp_class.create_dataset('1', data = testClass, chunks = (len(testClass),), compression="gzip", compression_opts=7)
 
 testFile.close()

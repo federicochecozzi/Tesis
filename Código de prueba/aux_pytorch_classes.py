@@ -2,8 +2,10 @@
 """
 Created on Fri Oct 11 18:55:37 2024
 
-@author: tiama
+@author: federicochecozzi
 """
+
+#Versión pensada para  computadoras con RAM limitada
 
 import h5py
 import numpy as np
