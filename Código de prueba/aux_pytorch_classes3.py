@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Nov  9 13:02:04 2024
+Created on Mon Nov 18 19:18:13 2024
 
 @author: federicochecozzi
 """
 
-#Versión que carga todo el dataset en memoria
+#Versión que carga todo el dataset en memoria y usa pseudoetiquetas para aprendizaje semisupervisado
 
 import h5py
 import numpy as np
@@ -17,20 +17,16 @@ from torchvision.transforms.v2 import Lambda
 def convert_to_2dtensor(array,index,shape):
     return torch.tensor(np.expand_dims(array[index[0]:index[1]].reshape(shape),axis = 0))
 
-class EMSLIBS2019Dataset(Dataset):
+class psEMSLIBS2019Dataset(Dataset):
     
-    def __init__(self, path, spectra_file, label_file = None, transform = None, target_transform = None):
+    def __init__(self, path, spectra_file, label_file, transform = None, target_transform = None):
         
-        #self.spectra_file = spectra_file
-        #self.path = path
-        #os.chdir(path)
+        #Las etiquetas pueden estar en un archivo csv separado o dentro del hdf5
+        self.labels = np.loadtxt(os.path.join(path,label_file), dtype = 'int')
+        #en un archivo con pseudoetiquetas, los espectros que no van a usarse valen 0
+        self.indexes = np.nonzero(self.labels)[0]
+        
         with h5py.File(os.path.join(path,spectra_file),'r') as spectra_dataset:
-            
-            #Las etiquetas pueden estar en un archivo csv separado o dentro del hdf5
-            if label_file: 
-                self.labels = np.loadtxt(os.path.join(path,label_file), dtype = 'int')
-            else:
-                self.labels = spectra_dataset["Class"]["1"][()]
             
             #Extraigo nombre del grupo con los espectros, puede variar según el archivo
             key_set = set(spectra_dataset.keys())
@@ -51,11 +47,11 @@ class EMSLIBS2019Dataset(Dataset):
         self.target_transform = target_transform
         
     def __len__(self):
-        return len(self.spectraData)
+        return len(self.indexes)
 
     def __getitem__(self, idx):
-        spectra = self.spectraData[idx]        
-        label = self.labels[idx]
+        spectra = self.spectraData[self.indexes[idx]]        
+        label = self.labels[self.indexes[idx]]
         if self.transform:
             spectra = self.transform(spectra)
         if self.target_transform:
@@ -63,11 +59,11 @@ class EMSLIBS2019Dataset(Dataset):
         return spectra, label
     
 path = "D:\Tesis\Datasets"#r"C:\Users\tiama\OneDrive\Documentos\Dataset EMSLIBS2019"
-spectra_file = "val_d8_sc250.h5"
-label_file = None#"test_labels.csv"
+spectra_file = "test_d8_sc250.h5"
+label_file = "testpred_e15_16112024.txt"
 index = (0,-1)
 shape = (100,50)
-data = EMSLIBS2019Dataset(path = path, spectra_file = spectra_file, label_file = label_file, 
+data = psEMSLIBS2019Dataset(path = path, spectra_file = spectra_file, label_file = label_file, 
                           transform = Lambda(lambda array: convert_to_2dtensor(array,index,shape)),
                           target_transform = Lambda(torch.tensor))
 print(len(data))
