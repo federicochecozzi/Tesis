@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Sep 23 18:44:03 2023
+Created on Wed Jan 22 16:50:41 2025
 
-@author: Federico Checozzi
+@author: federicochecozzi
 """
 
 ## import libraries
@@ -13,8 +13,8 @@ import time
 from scipy.signal import decimate
 
 datasetpath = r"D:\Tesis\Datasets"; 
-downsampling_factor = 3
-output_file = 'train_downsampled.h5'
+downsampling_factor = 6
+output_file = 'train_downsampled_d6.h5'
 
 ## set number of spectra and path to the data files
 os.chdir(datasetpath)   # selecting the directory containing the data files
@@ -44,7 +44,7 @@ del tempData, sample
 end = time.time()
 print('Execution time is:')
 print(end - start)
-#184.1315200328827s
+#159.19730710983276s
 ##########################################
 # End of loading script
 ##########################################

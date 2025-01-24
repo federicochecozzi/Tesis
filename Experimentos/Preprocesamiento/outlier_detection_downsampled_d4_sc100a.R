@@ -1,5 +1,3 @@
-#problemas con SVD, no usar
-
 library(rhdf5)
 library(rospca)
 #library(mlr)
@@ -10,15 +8,15 @@ library(rospca)
 
 # set number of spectra and path to the data files
 setwd(r"(D:\Tesis\Datasets)")    # selecting the directory containing the data files
-spectraCount <- 500   # selecting the number of spectra for each sample (maximum of 500), recommended 100
+spectraCount <- 100   # selecting the number of spectra for each sample (maximum of 500), recommended 100
 
 ##########################################
 # Train Data
 ##########################################
 
-wavelengths <- as.data.frame(h5read(file = "train_processed.h5", name = "Wavelengths")) # import wavelengths
-trainClass <- as.data.frame(h5read(file = "train_processed.h5", name = "Class")) # import classes
-trainData <- h5read(file = "train_processed.h5", name = "Spectra") # import spectra
+wavelengths <- as.data.frame(h5read(file = "train_downsampled_d4.h5", name = "Wavelengths")) # import wavelengths
+trainClass <- as.data.frame(h5read(file = "train_downsampled_d4.h5", name = "Class")) # import classes
+trainData <- h5read(file = "train_downsampled_d4.h5", name = "Spectra") # import spectra
 h5closeAll()
 
 ##########################################
@@ -80,8 +78,8 @@ for (i in 1:12){
 
 end_time <- Sys.time()
 
-end_time - start_time #
+end_time - start_time #48.98913 mins
 
 setwd(r"(D:\Tesis\Algunos resultados\outliers)")  
 
-write.csv(keep.flag, file ="keep_list_PCAR.csv", row.names=FALSE)
+write.csv(keep.flag, file ="keep_list_PCAR_d4_sc100.csv", row.names=FALSE)
