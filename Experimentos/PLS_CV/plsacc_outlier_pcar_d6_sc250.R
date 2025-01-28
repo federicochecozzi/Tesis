@@ -60,19 +60,21 @@ testData <- as.data.frame(do.call('rbind',testData))
 ##########################################
 setwd(r"(D:\Tesis\Algunos resultados\outliers)")
 
-outlier_lista <- fread("keep_list_PCAR_d6_sc250.csv")
-outlier_listb <- fread("keep_list_PCAR_d6_sc250b.csv")
+keep_lista <- as.vector(fread("keep_list_PCAR_d6_sc250.csv")$x)
+keep_listb <- as.vector(fread("keep_list_PCAR_d6_sc250b.csv")$x)
 
-outlier_list <- vector()
-for (i in c(seq(0,24750,250))){
-  tempa <- outlier_lista[(i+1):(i+250)]
-  tempb <- outlier_listb[(i+1):(i+250)]
-  outlier_list <-  append(outlier_list,tempa)
-  outlier_list <-  append(outlier_list,tempb)
+tempa <- keep_lista[1:250]
+tempb <- keep_listb[1:250]
+keep_list <- c(tempa,tempb)
+for (i in c(seq(250,24750,250))){
+  tempa <- keep_lista[(i+1):(i+250)]
+  tempb <- keep_listb[(i+1):(i+250)]
+  keep_list <-  c(keep_list,tempa)
+  keep_list <-  c(keep_list,tempb)
 }
 
-trainData <- trainData[outlier_list == FALSE,]
-trainClass <- trainClass[outlier_list == FALSE]
+trainData <- trainData[keep_list == TRUE,]
+trainClass <- trainClass[keep_list == TRUE]
 
 ##########################################
 
@@ -110,7 +112,7 @@ for (i in 0:4) {
 end_time <- Sys.time()
 
 end_time - start_time
-#
+#5.408002 hours
 
 ggplot() +
   geom_line(aes(x = 1:60, y = apply(1-acc_matrix, 2, mean))) +
@@ -123,14 +125,14 @@ model <- plsda(trainData,as.factor(trainClass),cv = NULL,ncomp = ncomp)
 end_time <- Sys.time()
 
 end_time - start_time
-# 
+#1.282857 hours 
 
 start_time <- Sys.time()
 test_res = predict(model, testData, as.factor(testClass))
 end_time <- Sys.time()
 
 end_time - start_time
-#
+#9.983981 mins
 
 summary(test_res)
 
@@ -143,7 +145,7 @@ confmat
 
 accuracy <- sum(diag(confmat))/sum(confmat) * 100
 accuracy
-#
+#55.93578%
 
 showPredictions(test_res, ncomp = ncomp)
 
@@ -151,4 +153,4 @@ ypred <- test_res$y.pred
 
 testClassfactor <- as.factor(testClass)
 levels(testClassfactor) <- c(levels(testClassfactor),'12')
-confusionMatrix(as.factor(testClass),as.factor(apply(ypred[,ncomp,],1,which.max))) #
+confusionMatrix(as.factor(testClass),as.factor(apply(ypred[,ncomp,],1,which.max))) #69,6%

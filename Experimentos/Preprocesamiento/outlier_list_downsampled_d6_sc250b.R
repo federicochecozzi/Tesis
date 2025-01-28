@@ -78,7 +78,7 @@ for (i in 1:12){
 
 end_time <- Sys.time()
 
-end_time - start_time # mins
+end_time - start_time #47.99947 mins
 
 setwd(r"(D:\Tesis\Algunos resultados\outliers)")  
 
