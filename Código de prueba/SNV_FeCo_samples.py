@@ -56,8 +56,8 @@ def normalize_row(row):
 wdir = r"C:\Users\Federico Checozzi\Documents\Tesis\Datasets"
 os.chdir(wdir)
 
-# Example usage
 file_path = 'discovery_catalina_20mJ.h5'
+#file_path = 'labtrace_avantes_7mJ.h5'
 data, samples, exp_params, wavelengths = load_h5_as_df(file_path)
 # print(data.shape)
 # print(samples.shape) 
